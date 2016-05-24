@@ -14,26 +14,153 @@ from pittnuts import *
 from os import system
 from caffe_apps import *
 import time
+
+def plot_hist(w,name):
+    plt.figure()
+    plt.hist(w,100)
+    plt.title(name)
+    plt.xlabel("Weight")
+    plt.ylabel("Frequency")
+
 plt.rcParams['figure.figsize'] = (10, 10)
 plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
 caffe_root = './'
 
-val_path  = 'examples/mnist/mnist_test_lmdb/'
+val_path  = 'examples/mnist/mnist_test_mlp_lmdb/'
 
 # GPU mode
-#caffe.set_device(0)
-#caffe.set_mode_gpu()
+caffe.set_device(1)
+caffe.set_mode_gpu()
 
-caffe.set_mode_cpu()
+#caffe.set_mode_cpu()
 
-net = caffe.Net(caffe_root + 'examples/mnist/mlp_deploy.prototxt',
-              caffe_root + 'examples/mnist/mlp_500_300_0.9857.caffemodel',
+net = caffe.Net(caffe_root + 'examples/mnist/lenet_deploy_mlp.prototxt',
+              #caffe_root + 'examples/mnist/lenet_iter_60000.caffemodel',
+                caffe_root + 'examples/mnist/mlp_500_300.caffemodel',
+              #caffe_root + 'examples/mnist/mlp_64_32.caffemodel',
               caffe.TEST)
 
+#linear quantification
+#step = 0.025
+#qsize = 2*step
+#for layer_name in net.params.keys():
+#        weights = net.params[layer_name][0].data
+#        w_shape = weights.shape
+#        w_f = weights.flatten()
+#        plot_hist(w_f,"{} before quantification".format(layer_name))
+#        for idx, val in enumerate(w_f):
+#            #quantification
+#            if abs(val)>4*step:
+#                w_f[idx] = sign(val)*4*step
+#            else:
+#                w_f[idx] = sign(val) * round(abs(val)/qsize) * qsize
+#        plot_hist(w_f, "{} after quantification".format(layer_name))
+#        weights[:] = w_f.reshape(w_shape)
+#plt.show()
+#exit()
+
+#quantification for layer1
+#layer1_step1 = 0.02
+#layer1_step2 = 0.05
+#
+#layer2_step1 = 0.03
+#layer2_step2 = 0.05
+#
+#layer3_step1 = 0.05
+#layer3_step2 = 0.1
+#layer3_step3 = 0.2
+#layer3_step4 = 0.4
+
+
+#step = 1
+#qsize = 2*step
+#for layer_name in net.params.keys():
+#        weights = net.params[layer_name][0].data
+#        w_shape = weights.shape
+#        w_f = weights.flatten()
+#        plot_hist(w_f,"{} before quantification".format(layer_name))
+#        for idx, val in enumerate(w_f):
+#            w_f[idx] = sign(val)
+#            #quantification
+#            #if abs(val)>3*step:
+#            #    w_f[idx] = sign(val)*3*step
+#            #else:
+#            #    w_f[idx] = sign(val) * (floor(abs(val)/qsize) * qsize+step)
+#        plot_hist(w_f, "{} after quantification".format(layer_name))
+#        weights[:] = w_f.reshape(w_shape)
+
+step_ip3 = 0.61
+qua_list = [-0.59, -0.31, -0.25, -step_ip3, 0, step_ip3, 0.25, 0.31, 0.59]
+#qua_list = [-step, 0, step]
+for layer_name in ["ip3"]:
+        #net.params.keys():
+    #["ip1", "ip2"]:
+    weights = net.params[layer_name][0].data
+    w_shape = weights.shape
+    w_f = weights.flatten()
+    plot_hist(w_f, "{} before quantification".format(layer_name))
+    for idx, val in enumerate(w_f):
+        # quantification
+        d = abs(val - qua_list[0])
+        idx_qua = qua_list[0]
+        for list_val in qua_list:
+            if abs(val-list_val)<d:
+                d = abs(val-list_val)
+                idx_qua = list_val
+        w_f[idx] = idx_qua
+    plot_hist(w_f, "{} after quantification".format(layer_name))
+    weights[:] = w_f.reshape(w_shape)
+
+step_ip2 = 0.06
+qua_list = [-0.09, -step_ip2, 0, step_ip2, 0.09]
+#qua_list = [-0.09, 0, 0.09]
+for layer_name in ["ip2"]:
+        #net.params.keys():
+    #["ip1", "ip2"]:
+    weights = net.params[layer_name][0].data
+    w_shape = weights.shape
+    w_f = weights.flatten()
+    plot_hist(w_f, "{} before quantification".format(layer_name))
+    for idx, val in enumerate(w_f):
+        # quantification
+        d = abs(val - qua_list[0])
+        idx_qua = qua_list[0]
+        for list_val in qua_list:
+            if abs(val-list_val)<d:
+                d = abs(val-list_val)
+                idx_qua = list_val
+        w_f[idx] = idx_qua
+    plot_hist(w_f, "{} after quantification".format(layer_name))
+    weights[:] = w_f.reshape(w_shape)
+
+step_ip1 = 0.03
+qua_list = [-step_ip1, -0.1, 0, 0.1, step_ip1]
+for layer_name in ["ip1"]:
+    # net.params.keys():
+    # ["ip1", "ip2"]:
+    weights = net.params[layer_name][0].data
+    w_shape = weights.shape
+    w_f = weights.flatten()
+    plot_hist(w_f, "{} before quantification".format(layer_name))
+    for idx, val in enumerate(w_f):
+        # quantification
+        d = abs(val - qua_list[0])
+        idx_qua = qua_list[0]
+        for list_val in qua_list:
+            if abs(val - list_val) < d:
+                d = abs(val - list_val)
+                idx_qua = list_val
+        w_f[idx] = idx_qua
+    plot_hist(w_f, "{} after quantification".format(layer_name))
+    weights[:] = w_f.reshape(w_shape)
+
+
+
+
 # set net to batch size
-height = 28
-width = 28
+height = 8
+width = 8
 if height!=width:
     warnings.warn("height!=width, please double check their dimension position",RuntimeWarning)
 
@@ -83,4 +210,5 @@ for key, value in lmdb_cursor:
         sys.stdout.flush()
     image_count += 1
 
+print(step_ip2)
 plt.show()

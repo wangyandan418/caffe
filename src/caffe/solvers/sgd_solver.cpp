@@ -198,6 +198,14 @@ Dtype SGDSolver<Dtype>::Regularize(int param_id) {
   const vector<float>& net_params_weight_decay =
       this->net_->params_weight_decay();
   const vector<string>& net_params_local_regular_types = this->net_->params_regularization_type();
+//  if(((w>=0)&&(w<0.5*a1))||((w>=a1)&&(w<0.5*(a1+a2)))||(w>a2)||((w>=-a2)&&(w<0.5*(-a1-a2))||((w>=-a1)&&(w<0.5*(-a1)))
+//  {
+//	  mutable_cpu_diff()=1;
+//  }
+//  else if(((w>=0.5*a1)&&(w<a1))||((w>0.5*(a1+a2))&&(w<a2))||(w<-a2)||((w>=0.5*(-a1-a2))&&(w<-a1))||((w>-0.5*a1)&&(w<0)))
+//		{
+//		mutable_cpu_diff()=-1;
+//		}
   Dtype weight_decay = this->param_.weight_decay();
   string regularization_type = this->param_.regularization_type();
   string local_regularization_type = net_params_local_regular_types[param_id];
@@ -232,7 +240,13 @@ Dtype SGDSolver<Dtype>::Regularize(int param_id) {
         //calcuate the l1 regularization term
 		regularization_term = caffe_cpu_asum(net_params[param_id]->count(),net_params[param_id]->cpu_data());
 		regularization_term *= local_decay;
-      } else {
+      } else if(regularization_type == "Q1"){
+    	  caffe_quantification(net_params[param_id]->count(),
+    	              local_decay,
+    	              net_params[param_id]->cpu_data(),
+    	              net_params[param_id]->mutable_cpu_diff());
+    	  //LOG(WARNING) << "regularization_term is not calculated (Q1)";
+      }else{
         LOG(FATAL) << "Unknown regularization type: " << regularization_type;
       }
     }
@@ -261,7 +275,13 @@ Dtype SGDSolver<Dtype>::Regularize(int param_id) {
         //calcuate the l1 regularization term
 		caffe_gpu_asum(net_params[param_id]->count(),net_params[param_id]->gpu_data(),&regularization_term);
 		regularization_term *= local_decay;
-      } else {
+      } else if(regularization_type == "Q1"){
+    	  caffe_quantification(net_params[param_id]->count(),
+    	              local_decay,
+    	              net_params[param_id]->cpu_data(),
+    	              net_params[param_id]->mutable_cpu_diff());
+    	  //LOG(WARNING) << "regularization_term is not calculated (Q1)";
+      }else {
         LOG(FATAL) << "Unknown regularization type: " << regularization_type;
       }
     }

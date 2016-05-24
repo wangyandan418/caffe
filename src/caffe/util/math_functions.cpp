@@ -71,6 +71,52 @@ void caffe_axpy<double>(const int N, const double alpha, const double* X,
     double* Y) { cblas_daxpy(N, alpha, X, 1, Y, 1); }
 
 template <typename Dtype>
+void caffe_quantification(const int N, const Dtype alpha, const Dtype* X,
+		Dtype* Y) {
+//	Dtype a1 = 1;
+//	Dtype step = 1;
+//	Dtype a2 = 3*step;
+//
+//	int section;
+//	for (int i = 0; i < N; ++i) {
+//		section = floor(abs(X[i])/step);
+//		if(X[i]>a2){
+//			Y[i] += alpha;
+//		}else if((X[i]>=0)&&(X[i]<a2)){
+//			if((section%2)==0){
+//				Y[i] -= alpha;
+//			}else{
+//				Y[i] += alpha;
+//			}
+//		}else if((X[i]<=0)&&(X[i]>(-a2))){
+//			if((section%2)==0){
+//				Y[i] += alpha ;
+//			}else{
+//				Y[i] -= alpha;
+//			}
+//		}else{
+//			Y[i] -= alpha;
+//		}
+//	  }
+	Dtype step = 0.05;
+	for (int i = 0; i < N; ++i) {
+	if(X[i]>=step)
+		Y[i] += alpha;
+	else if((X[i]>=0)&&(X[i]<step))
+		Y[i] -= alpha;
+	else if((X[i]>=(-step))&&(X[i]<0))
+		Y[i] += alpha;
+	else
+		Y[i] -= alpha;
+	}
+
+
+}
+template void caffe_quantification<float>(const int N, const float alpha, const float* X, float* Y);
+template void caffe_quantification<double>(const int N, const double alpha, const double* X, double* Y);
+
+
+template <typename Dtype>
 void caffe_set(const int N, const Dtype alpha, Dtype* Y) {
   if (alpha == 0) {
     memset(Y, 0, sizeof(Dtype) * N);  // NOLINT(caffe/alt_fn)
