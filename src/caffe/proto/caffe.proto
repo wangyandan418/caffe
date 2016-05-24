@@ -314,6 +314,9 @@ message ParamSpec {
   
   // To specify local regularization type ("L1"/"L2") 
   optional string regularization_type = 8 [default = ""];
+  
+  //quantification levels
+  repeated float quantification_level = 9;
 }
 
 // Specifies shape and decay multiplier of a block, on which group lasso regularization is enforced.
