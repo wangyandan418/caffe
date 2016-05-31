@@ -479,6 +479,7 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
     has_params_regularization_type_.push_back(param_spec->has_regularization_type());
     has_params_kernel_shape_decay_.push_back(param_spec->has_kernel_shape_decay_mult());
     has_params_block_group_lasso_.push_back(param_spec->block_group_lasso_size());
+    has_params_quantification_level_.push_back(param_spec->quantification_level_size());
     params_lr_.push_back(param_spec->lr_mult());
     params_weight_decay_.push_back(param_spec->decay_mult());
     params_breadth_decay_.push_back(param_spec->breadth_decay_mult());
@@ -495,6 +496,12 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
 	else {
 	  param_groups_.push_back(1);
 	}
+
+    vector<float> quantification_levels;
+	for(int i=0;i<param_spec->quantification_level_size();i++){
+		quantification_levels.push_back(param_spec->quantification_level(i));
+	}
+	params_quantification_level_.push_back(quantification_levels);
   } else {
     // Named param blob with name we've seen before: share params
     const int owner_net_param_id = param_names_index_[param_name];
@@ -592,6 +599,18 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
 		  params_block_group_lasso_[learnable_param_id] = block_spec;
 	  }
 	}
+    if (param_spec->quantification_level_size()) {
+	  if (has_params_quantification_level_[learnable_param_id]) {
+		LOG(FATAL) << "duplicate quantification_level among shared params.";
+	  } else {
+		  has_params_quantification_level_[learnable_param_id] = true;
+		  vector<float> quantification_levels;
+		  for(int i=0;i<param_spec->quantification_level_size();i++){
+			  quantification_levels.push_back(param_spec->quantification_level(i));
+		  }
+		  params_quantification_level_[learnable_param_id] = quantification_levels;
+	  }
+    }
   }
 }
 

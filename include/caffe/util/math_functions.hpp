@@ -35,7 +35,7 @@ void caffe_axpy(const int N, const Dtype alpha, const Dtype* X,
     Dtype* Y);
 
 template <typename Dtype>
-void caffe_quantification(const int N, const Dtype alpha, const Dtype* X,
+void caffe_quantification(const int N, const vector <float> Quan_levels, const Dtype alpha, const Dtype* X,
     Dtype* Y);
 
 template <typename Dtype>

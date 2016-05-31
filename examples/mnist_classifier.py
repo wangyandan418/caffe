@@ -36,8 +36,8 @@ caffe.set_mode_gpu()
 #caffe.set_mode_cpu()
 
 net = caffe.Net(caffe_root + 'examples/mnist/lenet_deploy_mlp.prototxt',
-              #caffe_root + 'examples/mnist/lenet_iter_60000.caffemodel',
-                caffe_root + 'examples/mnist/mlp_500_300.caffemodel',
+              caffe_root + 'examples/mnist/lenet_iter_60000.caffemodel',
+              #caffe_root + 'examples/mnist/mlp_500_300.caffemodel',
               #caffe_root + 'examples/mnist/mlp_64_32.caffemodel',
               caffe.TEST)
 
@@ -90,9 +90,10 @@ net = caffe.Net(caffe_root + 'examples/mnist/lenet_deploy_mlp.prototxt',
 #        plot_hist(w_f, "{} after quantification".format(layer_name))
 #        weights[:] = w_f.reshape(w_shape)
 
-step_ip3 = 0.61
-qua_list = [-0.59, -0.31, -0.25, -step_ip3, 0, step_ip3, 0.25, 0.31, 0.59]
-#qua_list = [-step, 0, step]
+#step_ip3 = 0.61
+#qua_list = [-0.59, -0.31, -0.25, -step_ip3, 0, step_ip3, 0.25, 0.31, 0.59]
+step_ip3 = 0.25
+qua_list = [-step_ip3, 0, step_ip3]
 for layer_name in ["ip3"]:
         #net.params.keys():
     #["ip1", "ip2"]:
@@ -112,9 +113,10 @@ for layer_name in ["ip3"]:
     plot_hist(w_f, "{} after quantification".format(layer_name))
     weights[:] = w_f.reshape(w_shape)
 
-step_ip2 = 0.06
-qua_list = [-0.09, -step_ip2, 0, step_ip2, 0.09]
-#qua_list = [-0.09, 0, 0.09]
+#step_ip2 = 0.06
+#qua_list = [-0.09, -step_ip2, 0, step_ip2, 0.09]
+step_ip2 = 0.09
+qua_list = [-step_ip2, 0, step_ip2]
 for layer_name in ["ip2"]:
         #net.params.keys():
     #["ip1", "ip2"]:
@@ -134,8 +136,10 @@ for layer_name in ["ip2"]:
     plot_hist(w_f, "{} after quantification".format(layer_name))
     weights[:] = w_f.reshape(w_shape)
 
-step_ip1 = 0.03
-qua_list = [-step_ip1, -0.1, 0, 0.1, step_ip1]
+#step_ip1 = 0.03
+#qua_list = [-step_ip1, -0.1, 0, 0.1, step_ip1]
+step_ip1 = 0.07
+qua_list = [-step_ip1, 0, step_ip1]
 for layer_name in ["ip1"]:
     # net.params.keys():
     # ["ip1", "ip2"]:

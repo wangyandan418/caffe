@@ -71,8 +71,47 @@ void caffe_axpy<double>(const int N, const double alpha, const double* X,
     double* Y) { cblas_daxpy(N, alpha, X, 1, Y, 1); }
 
 template <typename Dtype>
-void caffe_quantification(const int N, const Dtype alpha, const Dtype* X,
+void caffe_quantification(const int N, const vector <float> Quan_levels, const Dtype alpha, const Dtype* X,
 		Dtype* Y) {
+	if(!Quan_levels.size()){
+		return;
+	}
+	float d;
+	Dtype quan_level;
+
+
+	for (int i = 0; i < N; ++i) {
+		d = fabs(X[i]-Quan_levels[0]);
+//		LOG(INFO)<<Quan_levels[0];
+		quan_level = 0;
+		for (int j = 0; j < Quan_levels.size(); ++j){
+			if (fabs(X[i]-Quan_levels[j])<d){
+				d = fabs(X[i]-Quan_levels[j]);
+				quan_level = j;
+			}
+		}
+//		for (int v_i=0;v_i<Quan_levels.size();v_i++){
+//		  LOG(INFO)<<Quan_levels[v_i];
+//		}
+		if (X[i]<=Quan_levels[quan_level]){
+//			LOG(INFO)<<"i: "<<i;
+//			LOG(INFO)<<"X[i]: "<<X[i];
+//			LOG(INFO)<<Quan_levels[quan_level];
+//			LOG(INFO)<<"Y_before: "<<Y[i];
+			Y[i] -= alpha;
+//			LOG(INFO)<<"alpha: "<<alpha;
+//			LOG(INFO)<<"Y_after: "<<Y[i];
+		}
+		else{
+//			LOG(INFO)<<"i: "<<i;
+//			LOG(INFO)<<"X[i]: "<<X[i];
+//			LOG(INFO)<<Quan_levels[quan_level];
+//			LOG(INFO)<<"Y_before: "<<Y[i];
+			Y[i] += alpha;
+//			LOG(INFO)<<"alpha: "<<alpha;
+//			LOG(INFO)<<"Y_after: "<<Y[i];
+		}
+	}
 //	Dtype a1 = 1;
 //	Dtype step = 1;
 //	Dtype a2 = 3*step;
@@ -98,22 +137,22 @@ void caffe_quantification(const int N, const Dtype alpha, const Dtype* X,
 //			Y[i] -= alpha;
 //		}
 //	  }
-	Dtype step = 0.05;
-	for (int i = 0; i < N; ++i) {
-	if(X[i]>=step)
-		Y[i] += alpha;
-	else if((X[i]>=0)&&(X[i]<step))
-		Y[i] -= alpha;
-	else if((X[i]>=(-step))&&(X[i]<0))
-		Y[i] += alpha;
-	else
-		Y[i] -= alpha;
-	}
+//	Dtype step = 0.05;
+//	for (int i = 0; i < N; ++i) {
+//	if(X[i]>=step)
+//		Y[i] += alpha;
+//	else if((X[i]>=0)&&(X[i]<step))
+//		Y[i] -= alpha;
+//	else if((X[i]>=(-step))&&(X[i]<0))
+//		Y[i] += alpha;
+//	else
+//		Y[i] -= alpha;
+//	}
 
 
 }
-template void caffe_quantification<float>(const int N, const float alpha, const float* X, float* Y);
-template void caffe_quantification<double>(const int N, const double alpha, const double* X, double* Y);
+template void caffe_quantification<float>(const int N, const vector <float> Quan_levels, const float alpha, const float* X, float* Y);
+template void caffe_quantification<double>(const int N, const vector <float> Quan_levels, const double alpha, const double* X, double* Y);
 
 
 template <typename Dtype>

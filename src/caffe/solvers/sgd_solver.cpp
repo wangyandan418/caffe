@@ -206,6 +206,8 @@ Dtype SGDSolver<Dtype>::Regularize(int param_id) {
 //		{
 //		mutable_cpu_diff()=-1;
 //		}
+  const vector<float> net_params_q_levels =
+      	             this->net_->params_quantification_level()[param_id];
   Dtype weight_decay = this->param_.weight_decay();
   string regularization_type = this->param_.regularization_type();
   string local_regularization_type = net_params_local_regular_types[param_id];
@@ -242,9 +244,14 @@ Dtype SGDSolver<Dtype>::Regularize(int param_id) {
 		regularization_term *= local_decay;
       } else if(regularization_type == "Q1"){
     	  caffe_quantification(net_params[param_id]->count(),
+    			  net_params_q_levels,
     	              local_decay,
     	              net_params[param_id]->cpu_data(),
     	              net_params[param_id]->mutable_cpu_diff());
+    	  //LOG(INFO)<<net_params_q_levels;
+//    	  for (int v_i=0;v_i<net_params_q_levels.size();v_i++){
+//    		  LOG(INFO)<<net_params_q_levels[v_i];
+//    	  }
     	  //LOG(WARNING) << "regularization_term is not calculated (Q1)";
       }else{
         LOG(FATAL) << "Unknown regularization type: " << regularization_type;
@@ -277,9 +284,14 @@ Dtype SGDSolver<Dtype>::Regularize(int param_id) {
 		regularization_term *= local_decay;
       } else if(regularization_type == "Q1"){
     	  caffe_quantification(net_params[param_id]->count(),
+    			  net_params_q_levels,
     	              local_decay,
     	              net_params[param_id]->cpu_data(),
     	              net_params[param_id]->mutable_cpu_diff());
+    	  //LOG(INFO)<<net_params_q_levels;
+//		  for (int v_i=0;v_i<net_params_q_levels.size();v_i++){
+//			  LOG(INFO)<<net_params_q_levels[v_i];
+//		  }
     	  //LOG(WARNING) << "regularization_term is not calculated (Q1)";
       }else {
         LOG(FATAL) << "Unknown regularization type: " << regularization_type;
@@ -377,6 +389,8 @@ Dtype SGDSolver<Dtype>::GroupLassoRegularize(int param_id) {
   	             this->net_->params_kernel_shape_decay();
   const vector<BlockGroupLassoSpec> net_params_block_group_lasso =
     	             this->net_->params_block_group_lasso()[param_id];
+  const vector<float> net_params_quantification_level =
+      	             this->net_->params_quantification_level()[param_id];
   Dtype local_breadth_decay = this->param_.breadth_decay() * net_params_breadth_decay_multi[param_id];
   Dtype local_kernel_shape_decay = this->param_.kernel_shape_decay() * net_params_kernel_shape_decay_multi[param_id];
   Dtype regularization_term = Dtype(0);

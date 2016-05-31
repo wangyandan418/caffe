@@ -198,6 +198,9 @@ class Net {
   inline const vector< vector<BlockGroupLassoSpec> >& params_block_group_lasso() const {
       return params_block_group_lasso_;
   }
+  inline const vector< vector<float> >& params_quantification_level() const {
+       return params_quantification_level_;
+  }
 
   inline const vector< string >& params_regularization_type() const {
       return params_regularization_type_;
@@ -214,6 +217,9 @@ class Net {
   }
   inline const vector<bool>& has_params_block_group_lasso() const {
     return has_params_block_group_lasso_;
+  }
+  inline const vector<bool>& has_params_quantification_level() const {
+     return has_params_quantification_level_;
   }
   inline const vector<bool>& has_params_regularization_type() const {
     return has_params_regularization_type_;
@@ -348,6 +354,9 @@ class Net {
   /// the block group lasso spec
   vector< vector<BlockGroupLassoSpec> > params_block_group_lasso_;
   vector<bool> has_params_block_group_lasso_;
+  /// the quantification_level
+  vector< vector<float> > params_quantification_level_;
+  vector<bool> has_params_quantification_level_;
   /// the regularization type
   vector<string> params_regularization_type_;
   vector<bool> has_params_regularization_type_;
