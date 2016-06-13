@@ -27,7 +27,8 @@ plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
 caffe_root = './'
 
-val_path  = 'examples/mnist/mnist_test_mlp_lmdb/'
+#val_path  = 'examples/mnist/mnist_test_mlp_lmdb/'
+val_path  = 'examples/mnist/mnist_test_cnn_lmdb/'
 
 # GPU mode
 caffe.set_device(1)
@@ -35,11 +36,113 @@ caffe.set_mode_gpu()
 
 #caffe.set_mode_cpu()
 
-net = caffe.Net(caffe_root + 'examples/mnist/lenet_deploy_mlp.prototxt',
-              caffe_root + 'examples/mnist/lenet_iter_60000.caffemodel',
+#net = caffe.Net(caffe_root + 'examples/mnist/lenet_deploy_mlp.prototxt',
+net = caffe.Net(caffe_root + 'examples/mnist/lenet_deploy_cnn.prototxt',
+              #caffe_root + 'examples/mnist/lenet_iter_60000.caffemodel',
+              caffe_root + 'examples/mnist/lenet_iter_60000_cnn.caffemodel',
               #caffe_root + 'examples/mnist/mlp_500_300.caffemodel',
               #caffe_root + 'examples/mnist/mlp_64_32.caffemodel',
               caffe.TEST)
+
+imp=0.065
+#step_ip3 = 0.61
+#qua_list = [-0.59, -0.31, -0.25, -step_ip3, 0, step_ip3, 0.25, 0.31, 0.59]
+#step_conv1 = 0.36
+step_conv1 = imp
+qua_list = [-step_conv1, 0, step_conv1]
+for layer_name in ["conv1"]:
+        #net.params.keys():
+    #["ip1", "ip2"]:
+    weights = net.params[layer_name][0].data
+    w_shape = weights.shape
+    w_f = weights.flatten()
+    plot_hist(w_f, "{} before quantification".format(layer_name))
+    for idx, val in enumerate(w_f):
+        # quantification
+        d = abs(val - qua_list[0])
+        idx_qua = qua_list[0]
+        for list_val in qua_list:
+            if abs(val-list_val)<d:
+                d = abs(val-list_val)
+                idx_qua = list_val
+        w_f[idx] = idx_qua
+    plot_hist(w_f, "{} after quantification".format(layer_name))
+    weights[:] = w_f.reshape(w_shape)
+
+# step_ip3 = 0.61
+# qua_list = [-0.59, -0.31, -0.25, -step_ip3, 0, step_ip3, 0.25, 0.31, 0.59]
+#step_conv2 = 0.07
+step_conv2 = imp
+qua_list = [-step_conv2, 0, step_conv2]
+for layer_name in ["conv2"]:
+    # net.params.keys():
+    # ["ip1", "ip2"]:
+    weights = net.params[layer_name][0].data
+    w_shape = weights.shape
+    w_f = weights.flatten()
+    plot_hist(w_f, "{} before quantification".format(layer_name))
+    for idx, val in enumerate(w_f):
+        # quantification
+        d = abs(val - qua_list[0])
+        idx_qua = qua_list[0]
+        for list_val in qua_list:
+            if abs(val - list_val) < d:
+                d = abs(val - list_val)
+                idx_qua = list_val
+        w_f[idx] = idx_qua
+    plot_hist(w_f, "{} after quantification".format(layer_name))
+    weights[:] = w_f.reshape(w_shape)
+
+# #step_ip2 = 0.06
+# #qua_list = [-0.09, -step_ip2, 0, step_ip2, 0.09]
+#step_ip2 = 0.18
+step_ip2 = imp
+qua_list = [-step_ip2, 0, step_ip2]
+for layer_name in ["ip2"]:
+        #net.params.keys():
+    #["ip1", "ip2"]:
+    weights = net.params[layer_name][0].data
+    w_shape = weights.shape
+    w_f = weights.flatten()
+    plot_hist(w_f, "{} before quantification".format(layer_name))
+    for idx, val in enumerate(w_f):
+        # quantification
+        d = abs(val - qua_list[0])
+        idx_qua = qua_list[0]
+        for list_val in qua_list:
+            if abs(val-list_val)<d:
+                d = abs(val-list_val)
+                idx_qua = list_val
+        w_f[idx] = idx_qua
+    plot_hist(w_f, "{} after quantification".format(layer_name))
+    weights[:] = w_f.reshape(w_shape)
+#
+#step_ip1 = 0.03
+#qua_list = [-step_ip1, -0.1, 0, 0.1, step_ip1]
+#step_ip1 = 0.02
+step_ip1 = imp
+qua_list = [-step_ip1, 0, step_ip1]
+for layer_name in ["ip1"]:
+    # net.params.keys():
+    # ["ip1", "ip2"]:
+    weights = net.params[layer_name][0].data
+    w_shape = weights.shape
+    w_f = weights.flatten()
+    plot_hist(w_f, "{} before quantification".format(layer_name))
+    for idx, val in enumerate(w_f):
+        # quantification
+        d = abs(val - qua_list[0])
+        idx_qua = qua_list[0]
+        for list_val in qua_list:
+            if abs(val - list_val) < d:
+                d = abs(val - list_val)
+                idx_qua = list_val
+        w_f[idx] = idx_qua
+    plot_hist(w_f, "{} after quantification".format(layer_name))
+    weights[:] = w_f.reshape(w_shape)
+
+
+
 
 #linear quantification
 #step = 0.025
@@ -92,72 +195,72 @@ net = caffe.Net(caffe_root + 'examples/mnist/lenet_deploy_mlp.prototxt',
 
 #step_ip3 = 0.61
 #qua_list = [-0.59, -0.31, -0.25, -step_ip3, 0, step_ip3, 0.25, 0.31, 0.59]
-step_ip3 = 0.25
-qua_list = [-step_ip3, 0, step_ip3]
-for layer_name in ["ip3"]:
+#step_ip3 = 0.25
+#qua_list = [-step_ip3, 0, step_ip3]
+#for layer_name in ["ip3"]:
         #net.params.keys():
     #["ip1", "ip2"]:
-    weights = net.params[layer_name][0].data
-    w_shape = weights.shape
-    w_f = weights.flatten()
-    plot_hist(w_f, "{} before quantification".format(layer_name))
-    for idx, val in enumerate(w_f):
-        # quantification
-        d = abs(val - qua_list[0])
-        idx_qua = qua_list[0]
-        for list_val in qua_list:
-            if abs(val-list_val)<d:
-                d = abs(val-list_val)
-                idx_qua = list_val
-        w_f[idx] = idx_qua
-    plot_hist(w_f, "{} after quantification".format(layer_name))
-    weights[:] = w_f.reshape(w_shape)
+    #    weights = net.params[layer_name][0].data
+    #    w_shape = weights.shape
+    #    w_f = weights.flatten()
+    #    plot_hist(w_f, "{} before quantification".format(layer_name))
+    #    for idx, val in enumerate(w_f):
+    #        # quantification
+    #        d = abs(val - qua_list[0])
+    #        idx_qua = qua_list[0]
+    #        for list_val in qua_list:
+    #           if abs(val-list_val)<d:
+    #                d = abs(val-list_val)
+    #                idx_qua = list_val
+    #        w_f[idx] = idx_qua
+    #    plot_hist(w_f, "{} after quantification".format(layer_name))
+#   weights[:] = w_f.reshape(w_shape)
 
 #step_ip2 = 0.06
 #qua_list = [-0.09, -step_ip2, 0, step_ip2, 0.09]
-step_ip2 = 0.09
-qua_list = [-step_ip2, 0, step_ip2]
-for layer_name in ["ip2"]:
+#step_ip2 = 0.09
+#qua_list = [-step_ip2, 0, step_ip2]
+#for layer_name in ["ip2"]:
         #net.params.keys():
     #["ip1", "ip2"]:
-    weights = net.params[layer_name][0].data
-    w_shape = weights.shape
-    w_f = weights.flatten()
-    plot_hist(w_f, "{} before quantification".format(layer_name))
-    for idx, val in enumerate(w_f):
+    #    weights = net.params[layer_name][0].data
+    #    w_shape = weights.shape
+    #    w_f = weights.flatten()
+    #    plot_hist(w_f, "{} before quantification".format(layer_name))
+    #    for idx, val in enumerate(w_f):
         # quantification
-        d = abs(val - qua_list[0])
-        idx_qua = qua_list[0]
-        for list_val in qua_list:
-            if abs(val-list_val)<d:
-                d = abs(val-list_val)
-                idx_qua = list_val
-        w_f[idx] = idx_qua
-    plot_hist(w_f, "{} after quantification".format(layer_name))
-    weights[:] = w_f.reshape(w_shape)
+    #        d = abs(val - qua_list[0])
+    #        idx_qua = qua_list[0]
+    #        for list_val in qua_list:
+    #            if abs(val-list_val)<d:
+    #                d = abs(val-list_val)
+    #                idx_qua = list_val
+    #        w_f[idx] = idx_qua
+    #    plot_hist(w_f, "{} after quantification".format(layer_name))
+#   weights[:] = w_f.reshape(w_shape)
 
 #step_ip1 = 0.03
 #qua_list = [-step_ip1, -0.1, 0, 0.1, step_ip1]
-step_ip1 = 0.07
-qua_list = [-step_ip1, 0, step_ip1]
-for layer_name in ["ip1"]:
+#step_ip1 = 0.07
+#qua_list = [-step_ip1, 0, step_ip1]
+#for layer_name in ["ip1"]:
     # net.params.keys():
     # ["ip1", "ip2"]:
-    weights = net.params[layer_name][0].data
-    w_shape = weights.shape
-    w_f = weights.flatten()
-    plot_hist(w_f, "{} before quantification".format(layer_name))
-    for idx, val in enumerate(w_f):
+    #    weights = net.params[layer_name][0].data
+    #    w_shape = weights.shape
+    #    w_f = weights.flatten()
+    #    plot_hist(w_f, "{} before quantification".format(layer_name))
+    #    for idx, val in enumerate(w_f):
         # quantification
-        d = abs(val - qua_list[0])
-        idx_qua = qua_list[0]
-        for list_val in qua_list:
-            if abs(val - list_val) < d:
-                d = abs(val - list_val)
-                idx_qua = list_val
-        w_f[idx] = idx_qua
-    plot_hist(w_f, "{} after quantification".format(layer_name))
-    weights[:] = w_f.reshape(w_shape)
+    #        d = abs(val - qua_list[0])
+    #        idx_qua = qua_list[0]
+    #        for list_val in qua_list:
+    #           if abs(val - list_val) < d:
+    #                d = abs(val - list_val)
+    #                idx_qua = list_val
+    #        w_f[idx] = idx_qua
+    #    plot_hist(w_f, "{} after quantification".format(layer_name))
+#    weights[:] = w_f.reshape(w_shape)
 
 
 
@@ -214,5 +317,5 @@ for key, value in lmdb_cursor:
         sys.stdout.flush()
     image_count += 1
 
-print(step_ip2)
-plt.show()
+print(step_ip1)
+#plt.show()

@@ -8,6 +8,7 @@ from scipy.io import *
 from PIL import Image
 import caffe
 import sys
+import os
 import lmdb
 from caffe.proto import caffe_pb2
 from pittnuts import *
@@ -19,17 +20,143 @@ plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
 caffe_root = './'
 
+def plot_hist(w,name):
+    plt.figure()
+    plt.hist(w,100)
+    plt.title(name)
+    plt.xlabel("Weight")
+    plt.ylabel("Frequency")
+
 val_path  = 'examples/cifar10/cifar10_test_lmdb'
+
+mu, sigma = 0, 0.005  # mean and standard deviation
+num1 = 2400
+num2 = 25600
+num3 = 51200
+num4 = 10240
+s1 = np.random.normal(mu, sigma, num1)
+s2 = np.random.normal(mu, sigma, num2)
+s3 = np.random.normal(mu, sigma, num3)
+s4 = np.random.normal(mu, sigma, num4)
+
 
 # GPU mode
 #caffe.set_device(0)
 #caffe.set_mode_gpu()
 
 caffe.set_mode_cpu()
-
-net = caffe.Net(caffe_root + 'examples/cifar10/cifar10_full.prototxt',
-              caffe_root + 'examples/cifar10/cifar10_full_iter_300000_0.8212.caffemodel',
+src_model = caffe_root + 'examples/cifar10/0.0005_0.002_0.0_0.0_0.0_Sat_Jun_11_11-26-01_EDT_2016/cifar10_full_iter_130000.caffemodel'
+net = caffe.Net(caffe_root + 'examples/cifar10/cifar10_full_cnn.prototxt',
+#              caffe_root + 'examples/cifar10/cifar10_full_iter_300000_0.8212.caffemodel',
+                src_model,
+              #caffe_root + 'examples/cifar10/cifar10_full_iter_300000.caffemodel',
               caffe.TEST)
+
+# imp=0.1
+#step_ip3 = 0.61
+#qua_list = [-0.59, -0.31, -0.25, -step_ip3, 0, step_ip3, 0.25, 0.31, 0.59]
+#step_conv1 = 0.36
+step_conv1 = 0.17
+qua_list = [-step_conv1,-0.05,-0.12, -0.29, 0, step_conv1, 0.05, 0.12, 0.29]
+for layer_name in ["conv1"]:
+        #net.params.keys():
+    #["ip1", "ip2"]:
+    weights = net.params[layer_name][0].data
+    w_shape = weights.shape
+    w_f = weights.flatten()
+    plot_hist(w_f, "{} before quantification".format(layer_name))
+    for idx, val in enumerate(w_f):
+
+        # quantification
+        d = abs(val - qua_list[0])
+        idx_qua = qua_list[0]
+        for list_val in qua_list:
+            if abs(val-list_val)<d:
+                d = abs(val-list_val)
+                idx_qua = list_val
+        w_f[idx] = idx_qua
+        # add variance
+        w_f[idx] = w_f[idx] + s1[idx]
+    plot_hist(w_f, "{} after quantification".format(layer_name))
+    weights[:] = w_f.reshape(w_shape)
+
+# step_ip3 = 0.61
+# qua_list = [-0.59, -0.31, -0.25, -step_ip3, 0, step_ip3, 0.25, 0.31, 0.59]
+#step_conv2 = 0.07
+step_conv2 = 0.02
+qua_list = [-step_conv2,-0.05, -0.08,-0.2, 0, step_conv2, 0.05, 0.08,0.2]
+for layer_name in ["conv2"]:
+    # net.params.keys():
+    # ["ip1", "ip2"]:
+    weights = net.params[layer_name][0].data
+    w_shape = weights.shape
+    w_f = weights.flatten()
+    plot_hist(w_f, "{} before quantification".format(layer_name))
+    for idx, val in enumerate(w_f):
+        # quantification
+        d = abs(val - qua_list[0])
+        idx_qua = qua_list[0]
+        for list_val in qua_list:
+            if abs(val - list_val) < d:
+                d = abs(val - list_val)
+                idx_qua = list_val
+        w_f[idx] = idx_qua
+        # add variance
+        w_f[idx] = w_f[idx] + s2[idx]
+    plot_hist(w_f, "{} after quantification".format(layer_name))
+    weights[:] = w_f.reshape(w_shape)
+
+# #step_ip2 = 0.06
+# #qua_list = [-0.09, -step_ip2, 0, step_ip2, 0.09]
+#step_ip2 = 0.18
+step_conv3 = 0.01
+qua_list = [-step_conv3, -0.02, -0.08,-0.18, 0, step_conv3, 0.02, 0.08, 0.18]
+for layer_name in ["conv3"]:
+        #net.params.keys():
+    #["ip1", "ip2"]:
+    weights = net.params[layer_name][0].data
+    w_shape = weights.shape
+    w_f = weights.flatten()
+    plot_hist(w_f, "{} before quantification".format(layer_name))
+    for idx, val in enumerate(w_f):
+        #quantification
+        d = abs(val - qua_list[0])
+        idx_qua = qua_list[0]
+        for list_val in qua_list:
+            if abs(val-list_val)<d:
+                d = abs(val-list_val)
+                idx_qua = list_val
+        w_f[idx] = idx_qua
+        # add variance
+        w_f[idx] = w_f[idx] + s3[idx]
+    plot_hist(w_f, "{} after quantification".format(layer_name))
+    weights[:] = w_f.reshape(w_shape)
+
+#step_ip1 = 0.03
+#qua_list = [-step_ip1, -0.1, 0, 0.1, step_ip1]
+#step_ip1 = 0.02
+step_ip1 = 0.003
+qua_list = [-step_ip1,-0.008, -0.001, -0.012, 0, step_ip1, 0.008, 0.001, 0.012]
+for layer_name in ["ip1"]:
+    # net.params.keys():
+    # ["ip1", "ip2"]:
+    weights = net.params[layer_name][0].data
+    w_shape = weights.shape
+    w_f = weights.flatten()
+    plot_hist(w_f, "{} before quantification".format(layer_name))
+    for idx, val in enumerate(w_f):
+        # quantification
+        d = abs(val - qua_list[0])
+        idx_qua = qua_list[0]
+        for list_val in qua_list:
+            if abs(val - list_val) < d:
+                d = abs(val - list_val)
+                idx_qua = list_val
+        w_f[idx] = idx_qua
+        # add variance
+        w_f[idx] = w_f[idx] + s4[idx]
+    plot_hist(w_f, "{} after quantification".format(layer_name))
+    weights[:] = w_f.reshape(w_shape)
 
 # set net to batch size
 height = 32
@@ -96,4 +223,8 @@ for key, value in lmdb_cursor:
         sys.stdout.flush()
     image_count += 1
 
+print(step_conv2)
 plt.show()
+file_split = os.path.splitext(src_model)
+filepath = file_split[0]+'_q'+file_split[1]
+net.save(filepath)

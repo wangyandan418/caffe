@@ -3,7 +3,7 @@ set -e
 set -x
 
 folder="examples/cifar10/"
-file_prefix="cifar10_resnet"
+file_prefix="cifar10_full"
 model_path="examples/cifar10/"
 
 if [ "$#" -lt 7 ]; then
