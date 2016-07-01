@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <random>
 
 #include "caffe/sgd_solvers.hpp"
 #include "caffe/util/hdf5.hpp"
@@ -164,6 +165,12 @@ void SGDSolver<Dtype>::ApplyUpdate() {
     ComputeUpdateValue(param_id, rate);
   }
   this->net_->Update();
+  // add Gaussian noise to parameters (e.g. weights)
+  for (int param_id = 0; param_id < this->net_->learnable_params().size();
+         ++param_id) {
+	  AddGaussianNoise(param_id);
+   }
+
 }
 
 template <typename Dtype>
@@ -306,6 +313,23 @@ Dtype SGDSolver<Dtype>::Regularize(int param_id) {
     LOG(FATAL) << "Unknown caffe mode: " << Caffe::mode();
   }
   return regularization_term;
+}
+
+template <typename Dtype>
+void SGDSolver<Dtype>::AddGaussianNoise(int param_id) {
+  const vector<Blob<Dtype>*>& net_params = this->net_->learnable_params();
+  const vector<float>& net_params_weight_noise_std_mult = this->net_->params_weight_noise_std_mult();
+  Dtype weight_noise_std = this->param_.weight_noise_std();
+  Dtype local_weight_noise_std = weight_noise_std * net_params_weight_noise_std_mult[param_id];
+  if(local_weight_noise_std){
+	  std::default_random_engine generator;
+	  std::normal_distribution<Dtype> distribution(0,local_weight_noise_std);
+	  for (int i = 0; i < net_params[param_id]->count(); ++i) {
+		  net_params[param_id]->mutable_cpu_data()[i] =
+				  net_params[param_id]->cpu_data()[i] + distribution(generator);
+	  }
+  }
+
 }
 
 template <typename Dtype>

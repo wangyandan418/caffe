@@ -76,9 +76,21 @@ void caffe_quantification(const int N, const vector <float> Quan_levels, const D
 	if(!Quan_levels.size()){
 		return;
 	}
-	float d;
-	Dtype quan_level;
+	Dtype d;
+	int quan_level;
 
+	Dtype max_value = Quan_levels[0];
+	Dtype min_value = Quan_levels[0];
+
+	for (int j = 0; j < Quan_levels.size(); ++j){
+		if (Quan_levels[j]>max_value){
+			max_value = Quan_levels[j];
+		}
+
+		if (Quan_levels[j]<min_value){
+			min_value = Quan_levels[j];
+		}
+	}
 
 	for (int i = 0; i < N; ++i) {
 		d = fabs(X[i]-Quan_levels[0]);
@@ -93,7 +105,12 @@ void caffe_quantification(const int N, const vector <float> Quan_levels, const D
 //		for (int v_i=0;v_i<Quan_levels.size();v_i++){
 //		  LOG(INFO)<<Quan_levels[v_i];
 //		}
-		if (X[i]<=Quan_levels[quan_level]){
+
+		if(X[i]>max_value){
+			Y[i] = (X[i]-max_value);
+		}else if(X[i]<min_value){
+			Y[i] = (X[i]-min_value);
+		} else if (X[i]<=Quan_levels[quan_level]){
 //			LOG(INFO)<<"i: "<<i;
 //			LOG(INFO)<<"X[i]: "<<X[i];
 //			LOG(INFO)<<Quan_levels[quan_level];

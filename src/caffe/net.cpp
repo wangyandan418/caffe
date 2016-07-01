@@ -478,6 +478,7 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
     has_params_breadth_decay_.push_back(param_spec->has_breadth_decay_mult());
     has_params_regularization_type_.push_back(param_spec->has_regularization_type());
     has_params_kernel_shape_decay_.push_back(param_spec->has_kernel_shape_decay_mult());
+    has_params_weight_noise_std_mult_.push_back(param_spec->has_weight_noise_std_mult());
     has_params_block_group_lasso_.push_back(param_spec->block_group_lasso_size());
     has_params_quantification_level_.push_back(param_spec->quantification_level_size());
     params_lr_.push_back(param_spec->lr_mult());
@@ -485,6 +486,7 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
     params_breadth_decay_.push_back(param_spec->breadth_decay_mult());
     params_regularization_type_.push_back(param_spec->regularization_type());
     params_kernel_shape_decay_.push_back(param_spec->kernel_shape_decay_mult());
+    params_weight_noise_std_mult_.push_back(param_spec->weight_noise_std_mult());
     vector<BlockGroupLassoSpec> block_spec;
     for(int i=0;i<param_spec->block_group_lasso_size();i++){
     	block_spec.push_back(param_spec->block_group_lasso(i));
@@ -585,6 +587,16 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
 	  } else {
 		  has_params_kernel_shape_decay_[learnable_param_id] = true;
 		  params_kernel_shape_decay_[learnable_param_id] = param_spec->kernel_shape_decay_mult();
+	  }
+	}
+    if (param_spec->has_weight_noise_std_mult()) {
+	  if (has_params_weight_noise_std_mult_[learnable_param_id]) {
+		CHECK_EQ(param_spec->weight_noise_std_mult(),
+				params_weight_noise_std_mult_[learnable_param_id])
+			<< "Shared param '" << param_name << "' has mismatched weight_noise_std_mult.";
+	  } else {
+		  has_params_weight_noise_std_mult_[learnable_param_id] = true;
+		  params_weight_noise_std_mult_[learnable_param_id] = param_spec->weight_noise_std_mult();
 	  }
 	}
     if (param_spec->block_group_lasso_size()) {
