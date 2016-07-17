@@ -47,16 +47,20 @@ s4 = np.random.normal(mu, sigma, num4)
 caffe.set_mode_cpu()
 # src_model = caffe_root + 'examples/cifar10/0.0005_0.002_0.0_0.0_0.0_Sat_Jun_11_11-26-01_EDT_2016/cifar10_full_iter_130000.caffemodel'
 # src_model = caffe_root + 'examples/cifar10/cifar10_full_iter_300000_0.8212.caffemodel'
+# src_model = caffe_root + 'examples/cifar10/0.6_0.0_0.0_0.0_0.0_Fri_Jul__8_14-28-31_EDT_2016//cifar10_full_iter_150000.caffemodel'
+# src_model = caffe_root + 'examples/cifar10/cifar10_full_iter_150000_0.7659.caffemodel'
+src_model = caffe_root + 'examples/cifar10/cifar10_full_bias_last_layer_iter_150000.caffemodel'
 # src_model = caffe_root + 'examples/cifar10/cifar10_full_bias_iter_150000.caffemodel'
 # src_model = caffe_root + 'examples/cifar10/cifar10_full_iter_150000.caffemodel'
-src_model = caffe_root + 'examples/cifar10/cifar10_full_bias_iter_150000_1level_diff_value.caffemodel'
+# src_model = caffe_root + 'examples/cifar10/cifar10_full_iter_150000.caffemodel'
+# src_model = caffe_root + 'examples/cifar10/cifar10_full_bias_iter_150000_1level_diff_value.caffemodel'
 net = caffe.Net(caffe_root + 'examples/cifar10/cifar10_full_cnn.prototxt',
 #              caffe_root + 'examples/cifar10/cifar10_full_iter_300000_0.8212.caffemodel',
                 src_model,
               #caffe_root + 'examples/cifar10/cifar10_full_iter_300000.caffemodel',
               caffe.TEST)
 
-step = 0.4
+step = 0.04
 # quan_pair = {"conv1": [-step, 0, step],
 #              "conv2": [-step, 0, step],
 #              "conv3": [-step, 0, step],
@@ -66,6 +70,10 @@ step = 0.4
 #              "conv2": [-0.08, 0, 0.08],
 #              "conv3": [-0.02, 0, 0.02],
 #              "ip1": [-0.008, 0, 0.008]}
+
+# quan_pair = {"conv1": [-0.12, 0, 0.12],
+#              "conv2": [-0.08, 0, 0.08],
+#              "conv3": [-0.02, 0, 0.02]}
 #
 # for layername in quan_pair.iterkeys():
 #     qua_list = quan_pair[layername]
@@ -82,8 +90,9 @@ step = 0.4
 #                 d = abs(val - list_val)
 #                 idx_qua = list_val
 #         w_f[idx] = idx_qua
-#     plot_hist(w_f, "{} after quantification".format(layername))
+#     # plot_hist(w_f, "{} after quantification".format(layername))
 #     weights[:] = w_f.reshape(w_shape)
+# plt.show()
 # plt.show()
 
 # # imp=0.1
@@ -242,7 +251,7 @@ for key, value in lmdb_cursor:
         endtime = time.time()
         plabel = out['prob'][:].argmax(axis=1)
         plabel_top5 = argsort(out['prob'][:],axis=1)[:,-1:-6:-1]
-        assert (plabel==plabel_top5[:,0]).all()
+        # assert (plabel==plabel_top5[:,0]).all()
         count = image_count + 1
         current_test_time = endtime-starttime
 
@@ -263,4 +272,5 @@ print(step)
 # filepath = file_split[0]+'_q'+file_split[1]
 # net.save(filepath)
 filepath,filename = os.path.split(src_model)
-net.save(filepath+"/lenet_deployed.caffemodel")
+filepath = caffe_root+"./examples/cifar10"
+net.save(filepath+"/lenet_deployed_cifar10.caffemodel")
