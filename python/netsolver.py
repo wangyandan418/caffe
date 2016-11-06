@@ -4,6 +4,7 @@ from PIL import Image
 import caffe
 import argparse
 import os
+# Test
 # --solver examples/cifar10/cifar10_full_multistep_solver.prototxt --weights examples/cifar10/cifar10_full_iter_50000.caffemodel.h5
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
