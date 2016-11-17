@@ -189,18 +189,26 @@ class BaseConvolutionLayer : public Layer<Dtype> {
     Blob<int> index_pointers_buffer_;
     Blob<int> nonzero_per_rowcol_buffer_;
   #endif
-
+#ifdef USE_SNAPSHOT_FEATURE
+    int num_forward_image_;
+#endif
     //Three blobs for sparse weight storage in CSC/CSR format
     //bool is_sparse_format_weights_; //if use the sparse storage format of weights
     Blob<Dtype> nz_weight_values_;//nonzero elements
     Blob<int> nz_weight_indices_;//index of nonzero
     Blob<int> nz_weight_index_pointers_;//pointer(index) of indices
+    Blob<int> nz_per_row_;//nonzero per row for cusparse
+    vector<int> nz_num_;//the number of nonzero for cusparse
     bool is_concatenating_weights_features_; //if use concatenation scheme to compress dense weights and features together
     Blob<int> dense_feature_map_mask_;//to skip all zero rows in col_buffer_
     Blob<int> col_buf_mask_;
+    Blob<int> row_buf_mask_;
     vector<int> left_columns_;//the number of left columns of weight matrix for each group
+    vector<int> left_rows_;//the number of left rows of weight matrix for each group
     Blob<Dtype> squeezed_weight_buffer_;
+    //vector< shared_ptr<Blob<Dtype> > > squeezed_weight_groups_;
     //Blob<Dtype> connectivity_mask_;//0.0 means the connection is off, 1.0 means ON
+    Blob<Dtype> transposed_output_buffer_;
 };
 
 }  // namespace caffe

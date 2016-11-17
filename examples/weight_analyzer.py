@@ -9,8 +9,6 @@ import caffeparser
 # --prototxt models/bvlc_reference_caffenet/deploy.prototxt --origimodel models/bvlc_reference_caffenet/caffenet_0.57368.caffemodel --tunedmodel models/bvlc_reference_caffenet/
 # --prototxt examples/mnist/lenet.prototxt --origimodel examples/mnist/lenet_0.9912.caffemodel --tunedmodel examples/mnist/
 # --prototxt examples/cifar10/cifar10_full.prototxt --origimodel examples/cifar10/cifar10_full_iter_300000_0.8212.caffemodel --tunedmodel examples/cifar10/cifar10_full_grouplasso_iter_60000.caffemodel
-# --prototxt examples/cifar10/cifar10_full_cnn.prototxt --origimodel examples/cifar10/cifar10_full_iter_300000_0.8212.caffemodel --tunedmodel examples/cifar10/0.6_0.0_0.0_0.0_0.0_Wed_Jul__6_23-18-51_EDT_2016/cifar10_full_iter_150000.caffemodel
-# --prototxt examples/mnist/lenet_deploy_cnn.prototxt --origimodel examples/mnist/lenet_iter_60000_cnn_0.9915.caffemodel --tunedmodel examples/mnist/lenet_cnn_bias_iter_30000_0.9896.caffemodel
 def print_eig_info(eig_values,percent=0.95):
     eig_sum = sum(eig_values)
     #print eig_values
@@ -170,16 +168,16 @@ if __name__ == "__main__":
     #show_2Dfilter_pca(orig_net, 'conv4')
     #show_2Dfilter_pca(orig_net, 'conv5')
 
-    #show_filter_channel_pca(orig_net, 'conv1')
-    #show_filter_channel_pca(tuned_net, 'conv1')
-    #show_filter_channel_pca(orig_net, 'conv2')
-    #show_filter_channel_pca(tuned_net, 'conv2')
-    #show_filter_channel_pca(orig_net, 'conv3')
-    #show_filter_channel_pca(tuned_net, 'conv3')
+    show_filter_channel_pca(orig_net, 'conv1')
+    show_filter_channel_pca(tuned_net, 'conv1')
+    show_filter_channel_pca(orig_net, 'conv2')
+    show_filter_channel_pca(tuned_net, 'conv2')
+    show_filter_channel_pca(orig_net, 'conv3')
+    show_filter_channel_pca(tuned_net, 'conv3')
 
-    weight_scope = get_max_weight(orig_net, tuned_net, 'conv1')
-    show_filters(orig_net,'conv1',-weight_scope, weight_scope)
-    show_filters(tuned_net, 'conv1', -weight_scope, weight_scope)
+    #weight_scope = get_max_weight(orig_net, tuned_net, 'conv1')
+    #show_filters(orig_net,'conv1',-weight_scope, weight_scope)
+    #show_filters(tuned_net, 'conv1', -weight_scope, weight_scope)
     #show_filter_shapes(orig_net, 'conv1')
     #show_filter_shapes(tuned_net, 'conv1')
 

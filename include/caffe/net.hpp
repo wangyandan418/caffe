@@ -25,6 +25,7 @@ class Net {
  public:
   explicit Net(const NetParameter& param, const Net* root_net = NULL);
   explicit Net(const string& param_file, Phase phase,
+      const int level = 0, const vector<string>* stages = NULL,
       const Net* root_net = NULL);
   virtual ~Net() {}
 
@@ -188,6 +189,9 @@ class Net {
   inline const vector<float>& params_weight_decay() const {
     return params_weight_decay_;
   }
+  inline const vector<  shared_ptr<Blob<Dtype> >  >& params_individual_weight_decay() const {
+    return params_individual_weight_decay_;
+  }
   inline const vector<float>& params_breadth_decay() const {
       return params_breadth_decay_;
   }
@@ -210,6 +214,9 @@ class Net {
 
   inline const vector<bool>& has_params_decay() const {
     return has_params_decay_;
+  }
+  inline const vector<bool>& has_params_individual_weight_decay() const {
+    return has_params_individual_weight_decay_;
   }
   inline const vector<bool>& has_params_breadth_decay() const {
     return has_params_breadth_decay_;
@@ -350,6 +357,9 @@ class Net {
   /// the weight decay multipliers for learnable_params_
   vector<float> params_weight_decay_;
   vector<bool> has_params_decay_;
+  /// the individual weight decay multipliers for each parameter in the learnable_params_
+  vector<  shared_ptr<Blob<Dtype> >  >  params_individual_weight_decay_;
+  vector<bool> has_params_individual_weight_decay_;
   /// the group lasso weight decay multipliers for breadth regularization
   vector<float> params_breadth_decay_;
   vector<bool> has_params_breadth_decay_;

@@ -32,7 +32,9 @@ void Blob<Dtype>::Reshape(const vector<int>& shape) {
   int* shape_data = static_cast<int*>(shape_data_->mutable_cpu_data());
   for (int i = 0; i < shape.size(); ++i) {
     CHECK_GE(shape[i], 0);
-    CHECK_LE(shape[i], INT_MAX / count_) << "blob size exceeds INT_MAX";
+    if (count_ != 0) {
+      CHECK_LE(shape[i], INT_MAX / count_) << "blob size exceeds INT_MAX";
+    }
     count_ *= shape[i];
     shape_[i] = shape[i];
     shape_data[i] = shape[i];
@@ -689,7 +691,10 @@ void Blob<Dtype>:: WriteToNistMMIO(string filename) const{
 	mm_set_array(&matcode);
 	mm_set_real(&matcode);
 	mm_set_general(&matcode);
-
+	if(NULL==fp) {
+		LOG(WARNING)<<"NULL file pointer to " << filename;
+		return;
+	}
 	mm_write_banner(fp, matcode);
 	int M = this->shape(0);//column of the stored matrix
 	int N = this->count()/M;

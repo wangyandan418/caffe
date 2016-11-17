@@ -81,6 +81,13 @@ layer {
   type: "Scale"
   bottom: "conv1_bn_norm"
   top: "conv1_bn"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -134,6 +141,13 @@ layer {
   type: "Scale"
   bottom: "res_grp1_1_bn1_norm"
   top: "res_grp1_1_bn1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -187,6 +201,13 @@ layer {
   type: "Scale"
   bottom: "res_grp1_1_bn2_norm"
   top: "res_grp1_1_bn2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -247,6 +268,13 @@ layer {
   type: "Scale"
   bottom: "res_grp1_2_bn1_norm"
   top: "res_grp1_2_bn1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -300,6 +328,13 @@ layer {
   type: "Scale"
   bottom: "res_grp1_2_bn2_norm"
   top: "res_grp1_2_bn2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -360,6 +395,13 @@ layer {
   type: "Scale"
   bottom: "res_grp1_3_bn1_norm"
   top: "res_grp1_3_bn1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -413,6 +455,13 @@ layer {
   type: "Scale"
   bottom: "res_grp1_3_bn2_norm"
   top: "res_grp1_3_bn2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -473,6 +522,13 @@ layer {
   type: "Scale"
   bottom: "res_grp2_1_bn1_norm"
   top: "res_grp2_1_bn1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -526,6 +582,13 @@ layer {
   type: "Scale"
   bottom: "res_grp2_1_bn2_norm"
   top: "res_grp2_1_bn2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -606,6 +669,13 @@ layer {
   type: "Scale"
   bottom: "res_grp2_2_bn1_norm"
   top: "res_grp2_2_bn1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -659,6 +729,13 @@ layer {
   type: "Scale"
   bottom: "res_grp2_2_bn2_norm"
   top: "res_grp2_2_bn2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -719,6 +796,13 @@ layer {
   type: "Scale"
   bottom: "res_grp2_3_bn1_norm"
   top: "res_grp2_3_bn1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -772,6 +856,13 @@ layer {
   type: "Scale"
   bottom: "res_grp2_3_bn2_norm"
   top: "res_grp2_3_bn2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -832,6 +923,13 @@ layer {
   type: "Scale"
   bottom: "res_grp3_1_bn1_norm"
   top: "res_grp3_1_bn1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -885,6 +983,13 @@ layer {
   type: "Scale"
   bottom: "res_grp3_1_bn2_norm"
   top: "res_grp3_1_bn2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -965,6 +1070,13 @@ layer {
   type: "Scale"
   bottom: "res_grp3_2_bn1_norm"
   top: "res_grp3_2_bn1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -1018,6 +1130,13 @@ layer {
   type: "Scale"
   bottom: "res_grp3_2_bn2_norm"
   top: "res_grp3_2_bn2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -1078,6 +1197,13 @@ layer {
   type: "Scale"
   bottom: "res_grp3_3_bn1_norm"
   top: "res_grp3_3_bn1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"
@@ -1131,6 +1257,13 @@ layer {
   type: "Scale"
   bottom: "res_grp3_3_bn2_norm"
   top: "res_grp3_3_bn2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   scale_param {
     filler {
       type: "msra"

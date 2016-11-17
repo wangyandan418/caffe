@@ -19,6 +19,7 @@
 
 #include "caffe/test/test_caffe_main.hpp"
 #include "caffe/util/benchmark.hpp"
+#include "caffe/util/io.hpp"
 
 namespace caffe {
 
@@ -29,11 +30,20 @@ Net<Dtype>::Net(const NetParameter& param, const Net* root_net)
 }
 
 template <typename Dtype>
-Net<Dtype>::Net(const string& param_file, Phase phase, const Net* root_net)
+Net<Dtype>::Net(const string& param_file, Phase phase,
+    const int level, const vector<string>* stages,
+    const Net* root_net)
     : root_net_(root_net) {
   NetParameter param;
   ReadNetParamsFromTextFileOrDie(param_file, &param);
+  // Set phase, stages and level
   param.mutable_state()->set_phase(phase);
+  if (stages != NULL) {
+    for (int i = 0; i < stages->size(); i++) {
+      param.mutable_state()->add_stage((*stages)[i]);
+    }
+  }
+  param.mutable_state()->set_level(level);
   Init(param);
 }
 
@@ -429,12 +439,11 @@ int Net<Dtype>::AppendBottom(const NetParameter& param, const int layer_id,
   bottom_vecs_[layer_id].push_back(blobs_[blob_id].get());
   bottom_id_vecs_[layer_id].push_back(blob_id);
   available_blobs->erase(blob_name);
-  bool propagate_down = true;
+  bool need_backward = blob_need_backward_[blob_id];
   // Check if the backpropagation on bottom_id should be skipped
-  if (layer_param.propagate_down_size() > 0)
-    propagate_down = layer_param.propagate_down(bottom_id);
-  const bool need_backward = blob_need_backward_[blob_id] &&
-                          propagate_down;
+  if (layer_param.propagate_down_size() > 0) {
+    need_backward = layer_param.propagate_down(bottom_id);
+  }
   bottom_need_backward_[layer_id].push_back(need_backward);
   return blob_id;
 }
@@ -475,6 +484,7 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
     learnable_param_ids_.push_back(learnable_param_id);
     has_params_lr_.push_back(param_spec->has_lr_mult());
     has_params_decay_.push_back(param_spec->has_decay_mult());
+    has_params_individual_weight_decay_.push_back(param_spec->has_decay_proto());
     has_params_breadth_decay_.push_back(param_spec->has_breadth_decay_mult());
     has_params_regularization_type_.push_back(param_spec->has_regularization_type());
     has_params_kernel_shape_decay_.push_back(param_spec->has_kernel_shape_decay_mult());
@@ -483,6 +493,26 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
     has_params_quantification_level_.push_back(param_spec->quantification_level_size());
     params_lr_.push_back(param_spec->lr_mult());
     params_weight_decay_.push_back(param_spec->decay_mult());
+    //read, parse and convert decay blob
+    if( IfFileExists(param_spec->decay_proto()) ){
+    	BlobProto blob_proto;
+    	CHECK( ReadProtoFromBinaryFile(param_spec->decay_proto().c_str(), &blob_proto) );
+    	shared_ptr< Blob<Dtype> >decay_blob (new Blob<Dtype> ());
+    	//Blob<Dtype> * decay_blob = new Blob<Dtype> ();
+    	decay_blob->FromProto(blob_proto);
+    	//params_individual_weight_decay_.push_back(decay_blob.get());
+    	params_individual_weight_decay_.push_back(decay_blob);
+    	CHECK_EQ(learnable_params_.back()->shape_string(),params_individual_weight_decay_.back()->shape_string());
+    	LOG(INFO)<<"Copying weight decay blob  "
+    			<< params_individual_weight_decay_.back()->shape_string()
+    			<< " from " << param_spec->decay_proto();
+//    	LOG(INFO) << params_individual_weight_decay_.size();
+    }else if (param_spec->decay_proto()==""){
+    	params_individual_weight_decay_.push_back( shared_ptr<Blob<Dtype> >() );//NULL
+    }else{
+    	LOG(FATAL) << "File does not exist: "<< param_spec->decay_proto();
+    }
+
     params_breadth_decay_.push_back(param_spec->breadth_decay_mult());
     params_regularization_type_.push_back(param_spec->regularization_type());
     params_kernel_shape_decay_.push_back(param_spec->kernel_shape_decay_mult());
@@ -559,6 +589,13 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
         params_weight_decay_[learnable_param_id] = param_spec->decay_mult();
       }
     }
+
+    /// NOT_IMPLEMENTED: has_params_individual_weight_decay_
+    /// NOT_IMPLEMENTED: params_individual_weight_decay_
+    if (param_spec->has_decay_proto()) {
+    	NOT_IMPLEMENTED;
+    }
+
     if (param_spec->has_breadth_decay_mult()) {
 	  if (has_params_breadth_decay_[learnable_param_id]) {
 		CHECK_EQ(param_spec->breadth_decay_mult(),

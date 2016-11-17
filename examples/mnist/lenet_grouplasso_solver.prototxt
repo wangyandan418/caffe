@@ -1,5 +1,9 @@
+###############################################################################
+# This is just an example to show how to configure group Lasso regularization #
+###############################################################################
+
 # The train/test net protocol buffer definition
-net: "examples/mnist/lenet_train_test.prototxt"
+net: "examples/mnist/lenet_train_test_grouplasso.prototxt"
 # test_iter specifies how many forward passes the test should carry out.
 # In the case of MNIST, we have test batch size 100 and 100 test iterations,
 # covering the full 10,000 testing images.
@@ -8,55 +12,20 @@ test_iter: 100
 test_interval: 500
 # The base learning rate, momentum and the weight decay of the network.
 base_lr: 0.01
-#base_lr: 0.001
 momentum: 0.9
 
-#weight_decay: 0.0005
-
-#weight_decay: 0.001
-#group_weight_decay: 0.001
-
-#weight_decay: 0.001
-#group_weight_decay: 0.005
-
-#weight_decay: 0.002
-#group_weight_decay: 0.01
-
-#weight_decay: 0.005
-#group_weight_decay: 0.03
-
-#weight_decay: 0.003
-#group_weight_decay: 0.02
-
-#weight_decay: 0.01
-#group_weight_decay: 0.01
-
-#weight_decay: 0.002
-#group_weight_decay: 0.02
-
-# presented in intel slides
-#weight_decay: 0.001
-#group_weight_decay: 0.01
-
-#98.46% finetune from lenet 5x 22x
-#breadth_decay: 0.01
-#kernel_shape_decay: 0.01
-#weight_decay: 0.0005
-
-#93%
-#breadth_decay: 0.008
-#kernel_shape_decay: 0.008
-#weight_decay: 0.0005
-#regularization_type: "L2"
+# coefficient of group Lasso regularization on rows
 breadth_decay: 0.005
+# coefficient of group Lasso regularization on columns
 kernel_shape_decay: 0.005
+# coefficient of traditional regularization (L1/L2) on weights
 weight_decay: 0.0
+
 regularization_type: "L2"
 
 # The learning rate policy
-#lr_policy: "inv"
 gamma: 0.1
-#power: 0.75
+
 lr_policy: "multistep"
 stepvalue: 6000
 stepvalue: 8000

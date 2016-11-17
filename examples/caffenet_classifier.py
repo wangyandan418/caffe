@@ -19,9 +19,7 @@ plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
 caffe_root = './'
 
-#imagenet_val_path  = '/home/wew57/cuda-workspace/SCNN_MAKEFILE_PRJ/caffe/examples/imagenet/ilsvrc12_val_lmdb'
-imagenet_val_path  = '/home/public/imagenet/ilsvrc12_val_lmdb'
-#imagenet_val_path  = 'examples/images/ilsvrc12_train_lmdb'
+imagenet_val_path  = 'examples/imagenet/ilsvrc12_val_lmdb'
 
 import os
 #if not os.path.isfile(caffe_root + 'models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel'):
@@ -30,45 +28,14 @@ import os
 #    os.system("./scripts/download_model_binary.py ./models/bvlc_reference_caffenet")
 
 # GPU mode
-caffe.set_device(2)
-caffe.set_mode_gpu()
+#caffe.set_device(0)
+#caffe.set_mode_gpu()
+caffe.set_mode_cpu()
 
-#caffe.set_mode_cpu()
-
-#net = caffe.Net(caffe_root + 'models/eilab_reference_sparsenet/deploy_scnn.prototxt',
-#                caffe_root + 'models/eilab_reference_sparsenet/eilab_reference_sparsenet.caffemodel',
-#                caffe.TEST)
-
-#net = caffe.Net(caffe_root + 'models/eilab_reference_sparsenet/deploy_scnn_skipped.prototxt',
-#                '/home/wew57/bincaffe/models/eilab_reference_sparsenet/l1_0001weighdecay_0001grpdecay_001lr_80000stepsize_160000iter/sparsenet_train_iter_160000.caffemodel',
-#                caffe.TEST)
-
-# net = caffe.Net(caffe_root + 'models/eilab_reference_sparsenet/deploy_scnn.prototxt',
-#                 'models/eilab_reference_sparsenet/sparsenet_train_iter_160000.caffemodel',
-#                 caffe.TEST)
-
-#net = caffe.Net(caffe_root + 'examples/cifar10/cifar10_quick_scnn.prototxt',
-#                caffe_root + 'examples/cifar10/cifar10_quick_iter_5000_sparsenet.caffemodel',
-#                caffe.TEST)
-
-#net = caffe.Net(caffe_root + 'models/eilab_reference_sparsenet/deploy_scnn.prototxt',
-#                caffe_root + 'models/eilab_reference_sparsenet/sparsenet_train_iter_10000_l1.caffemodel',
-#                caffe.TEST)
-
-net = caffe.Net(caffe_root + 'models/bvlc_reference_caffenet/deploy.prototxt',
-              caffe_root + 'models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel',
+net = caffe.Net(#caffe_root + 'models/bvlc_reference_caffenet/deploy_csrmm.prototxt',
+                caffe_root + 'models/bvlc_reference_caffenet/deploy.prototxt',
+                caffe_root + 'models/bvlc_reference_caffenet/caffenet_SSL_0.4469.caffemodel',
              caffe.TEST)
-#
-#net = caffe.Net(caffe_root + 'models/bvlc_reference_caffenet/deploy.prototxt',
-#              caffe_root + 'models/bvlc_reference_caffenet/0.001_0.0003_0.0_0.0_0.0_Fri_Apr__8_13-24-15_EDT_2016/caffenet_train_iter_160000_0.57278_0.001_0.0003_0.0_0.0_0.0.caffemodel',
-#             caffe.TEST)
-
-#net = caffe.Net(caffe_root + 'models/bvlc_reference_caffenet/deploy.prototxt',
-#net = caffe.Net(caffe_root + 'models/bvlc_reference_caffenet/deploy_conv_mode.prototxt',
-              #caffe_root + 'models/bvlc_reference_caffenet/caffenet_train_grouplasso_iter_160000_0.519_intel.caffemodel',
-              #caffe_root + 'models/bvlc_reference_caffenet/caffenet_train_grouplasso_iter_160000_0.54214_1.0e-3.caffemodel',
-#              caffe_root + 'models/bvlc_reference_caffenet/caffenet_train_iter_160000_0.56318_finetuned_from_0.001_0.0005_0.0_0.0_0.0003.caffemodel',
-#              caffe.TEST)
 
 # input preprocessing: 'data' is the name of the input blob == net.inputs[0]
 #transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
@@ -116,23 +83,7 @@ vis_square(filters.transpose(0, 2, 3, 1))
 feat = net.blobs['conv1'].data[0, :36]
 vis_square(feat, padval=1)
 '''
-########## PCA #############
-#for idx in range(0,5):
-#    data = net.params[net.params.keys()[idx]][0].data
-#    #if idx != 0:
-#    #    data = data[0:data.shape[0]/2,:,:,:]
-#    weights = transpose(data,(2,3,1,0))
-#    P,S,Q,q = kernel_factorization(weights)
-#    print weights.shape
-#    #print q
-#    weights_recover,R = kernel_recover(P,S,Q,q)
-#    print "[{}] W: %{} error".format(net.params.keys()[idx],100*sum((weights-weights_recover)**2)/sum((weights)**2))
-#    r_width = 0.0001
-#    print "[{}] S: %{} zeros".format(net.params.keys()[idx],100*sum((abs(S)<r_width).flatten())/(float)(S.size))
-#    print "[{}] R: %{} zeros".format(net.params.keys()[idx],100*sum((abs(R)<r_width).flatten())/(float)(R.size))
-#    net.params[net.params.keys()[idx]][0].data[:] = weights_recover.transpose((3,2,0,1))
 
-#######################
 count = 0
 correct_top1 = 0
 correct_top5 = 0
@@ -173,6 +124,12 @@ for key, value in lmdb_cursor:
         starttime = time.time()
         out = net.forward()
         endtime = time.time()
+        # save blobs
+        if image_count<5:
+            blob_cells = {}
+            for blob_name in net.blobs.keys():
+                blob_cells[blob_name] = net.blobs[blob_name].data
+            savemat('blobs{}.mat'.format(image_count),blob_cells)
         #plabel = int(out['prob'][0].argmax(axis=0))
         plabel = out['prob'][:].argmax(axis=1)
         plabel_top5 = argsort(out['prob'][:],axis=1)[:,-1:-6:-1]
