@@ -3,7 +3,7 @@ set -e
 set -x
 
 folder="examples/cifar10/"
-file_prefix="cifar10_full"
+file_prefix="cifar10_grouplasso"
 model_path="examples/cifar10/"
 
 if [ "$#" -lt 7 ]; then
@@ -27,12 +27,9 @@ snapshot_path=$folder/${base_lr}_${weight_decay}_${kernel_shape_decay}_${breadth
 mkdir $snapshot_path
 
 solverfile=$snapshot_path/solver.prototxt
-template_file='template_solver.prototxt'
-#if [ "$#" -ge 7 ]; then
 template_file=$7
-#fi
 
-cat $folder/${template_file} > $solverfile
+cat ${template_file} > $solverfile
 echo "block_group_decay: $block_group_decay" >> $solverfile
 echo "kernel_shape_decay: $kernel_shape_decay" >> $solverfile
 echo "breadth_decay: $breadth_decay" >> $solverfile
@@ -54,10 +51,10 @@ echo "solver_mode: $solver_mode" >> $solverfile
 if [ "$#" -ge 8 ]; then
 	tunedmodel=$8
 	file_ext=$(echo ${tunedmodel} | rev | cut -d'.' -f 1 | rev)
-	if [ "$file_ext" = "caffemodel" ]; then
-	  ./build/tools/caffe.bin train --solver=$solverfile --weights=$model_path/$tunedmodel  > "${snapshot_path}/train.info" 2>&1
+	if [[ $tunedmodel == *"caffemodel"* ]]; then
+	  ./build/tools/caffe.bin train --solver=$solverfile --weights=$tunedmodel  > "${snapshot_path}/train.info" 2>&1
 	else
-	  ./build/tools/caffe.bin train --solver=$solverfile --snapshot=$model_path/$tunedmodel > "${snapshot_path}/train.info" 2>&1
+	  ./build/tools/caffe.bin train --solver=$solverfile --snapshot=$tunedmodel > "${snapshot_path}/train.info" 2>&1
 	fi
 else
 	./build/tools/caffe.bin train --solver=$solverfile   > "${snapshot_path}/train.info" 2>&1
