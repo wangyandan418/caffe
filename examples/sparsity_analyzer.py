@@ -10,6 +10,9 @@ import matplotlib.cm as cm
 # --prototxt models/bvlc_reference_caffenet/deploy.prototxt --origimodel models/bvlc_reference_caffenet/caffenet_0.57368.caffemodel --tunedmodel models/bvlc_reference_caffenet/
 # --prototxt examples/mnist/lenet.prototxt --origimodel examples/mnist/lenet_0.9912.caffemodel --tunedmodel examples/mnist/lenet_grouplasso_iter_10000.caffemodel
 # --prototxt examples/cifar10/cifar10_full.prototxt --origimodel examples/cifar10/cifar10_full_iter_300000_0.8212.caffemodel --tunedmodel examples/cifar10/cifar10_full_grouplasso_iter_60000.caffemodel
+#--prototxt /home/yaw46/github/caffe/examples/mnist/lenet_train_test.prototxt --origimodel /home/yaw46/github/caffe/examples/mnist/lenet_0.9917.caffemodel.h5 --tunedmodel /home/yaw46/github/caffe/examples/mnist/lenet_0.9917.caffemodel.h5
+#--prototxt /home/yaw46/github/caffe/examples/mnist/0.01_0.97_0.0_None_pca_dp_Sat_Nov_12_10-23-42_EST_2016/mnist_dp_5_12_36_net.prototxt --origimodel /home/yaw46/github/caffe/examples/mnist/0.01_0.97_0.0_None_pca_dp_Sat_Nov_12_10-23-42_EST_2016/mnist_dp_5_12_36.caffemodel.h5 --tunedmodel /home/yaw46/github/caffe/examples/mnist/0.01_0.97_0.0_None_pca_dp_Sat_Nov_12_10-23-42_EST_2016/mnist_dp_5_12_36.caffemodel.h5
+
 def show_filters(net,layername):
     weights = net.params[layername][0].data
     if len(weights.shape) < 3:
@@ -52,6 +55,8 @@ if __name__ == "__main__":
 # --prototxt /home/wew57/bincaffe/models/eilab_reference_sparsenet/train_val_scnn.prototxt  --origimodel /home/wew57/bincaffe/models/eilab_reference_sparsenet/eilab_reference_sparsenet_zerout.caffemodel --tunedmodel /home/wew57/bincaffe/models/eilab_reference_sparsenet/sparsenet_train_iter_160000.caffemodel
 # --prototxt examples/cifar10/cifar10_full_train_test.prototxt --origimodel examples/cifar10/cifar10_full_step_iter_200000.caffemodel --tunedmodel examples/cifar10/cifar10_full_grouplasso_iter_100000.caffemodel
 # --prototxt examples/mnist/lenet_train_test.prototxt --origimodel examples/mnist/lenet_iter_10000.caffemodel --tunedmodel examples/mnist/lenet_grouplasso_iter_10000.caffemodel
+
+
     caffe.set_mode_cpu()
     # GPU mode
     #caffe.set_device(1)
