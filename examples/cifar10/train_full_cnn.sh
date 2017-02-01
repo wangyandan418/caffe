@@ -4,7 +4,7 @@ TOOLS=./build/tools
 
 $TOOLS/caffe train \
     --solver=examples/cifar10/cifar10_full_solver_cnn.prototxt \
-    --weights=examples/cifar10/cifar10_full_iter_300000_0.8212.caffemodel
+    --weights=examples/cifar10/cifar10_full_iter_300000_0.8212.caffemodel.h5
 
 # reduce learning rate by factor of 10
 #$TOOLS/caffe train \
