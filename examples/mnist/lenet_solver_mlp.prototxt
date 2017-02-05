@@ -10,12 +10,12 @@ test_interval: 500
 #base_lr: 0.01
 base_lr: 0.001
 momentum: 0.9
-weight_decay: 0.002
+#weight_decay: 0.002
 #weight_decay: 0.00075
 #weight_decay: 0.001
 #weight_decay: 0.0005
 #weight_decay: 0.00025
-#weight_decay: 0.00005
+weight_decay: 0.00005
 
 # The learning rate policy
 #lr_policy: "inv"

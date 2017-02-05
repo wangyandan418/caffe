@@ -42,16 +42,15 @@ layer {
   param {
     lr_mult: 1
     decay_mult: 6
-#    quantification_level: -0.04
-#    quantification_level: 0
-#    quantification_level: 0.04
-#    quantification_level: -0.29
-#    quantification_level: -0.17
     quantification_level: -0.12
     quantification_level: 0
     quantification_level: 0.12
-#    quantification_level: 0.17
-#    quantification_level: 0.29
+    quantification_level: -0.29
+    quantification_level: -0.17
+    quantification_level: 0.17
+    quantification_level: -0.05
+    quantification_level: 0.05
+    quantification_level: 0.29
   }  
   param {
     lr_mult: 2
@@ -111,18 +110,15 @@ layer {
   param {
     lr_mult: 1
     decay_mult: 2
-#    quantification_level: -0.04
-#    quantification_level: 0
-#    quantification_level: 0.04
-#    quantification_level: -0.2
+    quantification_level: -0.2
     quantification_level: -0.08
-#    quantification_level: -0.05
-#    quantification_level: -0.02
+    quantification_level: -0.05
+    quantification_level: -0.02
     quantification_level: 0
-#    quantification_level: 0.02
-#    quantification_level: 0.05
+    quantification_level: 0.02
+    quantification_level: 0.05
     quantification_level: 0.08
-#    quantification_level: 0.2
+    quantification_level: 0.2
   }
   param {
     lr_mult: 2
@@ -182,18 +178,15 @@ layer {
   param {
     lr_mult: 1
     decay_mult: 4
-#    quantification_level: -0.04
-#    quantification_level: 0
-#    quantification_level: 0.04
-#    quantification_level: -0.18
-#    quantification_level: -0.08
+    quantification_level: -0.18
+    quantification_level: -0.08
     quantification_level: -0.02
-#    quantification_level: -0.01
+    quantification_level: -0.01
     quantification_level: 0
-#    quantification_level: 0.01
+    quantification_level: 0.01
     quantification_level: 0.02
-#    quantification_level: 0.08
-#    quantification_level: 0.18
+    quantification_level: 0.08
+    quantification_level: 0.18
   }
   param {
     lr_mult: 1
@@ -245,18 +238,15 @@ layer {
 #    decay_mult: 40
     decay_mult: 0
 #    decay_mult: 1
-#    quantification_level: -0.04
-#    quantification_level: 0
-#    quantification_level: 0.04
-#    quantification_level: -0.012
-#    quantification_level: -0.008
-#    quantification_level: -0.003
-#    quantification_level: -0.001
-#    quantification_level: 0
-#    quantification_level: 0.001
-#    quantification_level: 0.003
-#    quantification_level: 0.008
-#    quantification_level: 0.012
+    quantification_level: -0.012
+    quantification_level: -0.008
+    quantification_level: -0.003
+    quantification_level: -0.001
+    quantification_level: 0
+    quantification_level: 0.001
+    quantification_level: 0.003
+    quantification_level: 0.008
+    quantification_level: 0.012
   }
   param {
     lr_mult: 2

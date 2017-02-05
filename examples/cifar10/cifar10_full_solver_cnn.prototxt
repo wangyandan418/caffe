@@ -19,13 +19,15 @@ lr_policy: "multistep"
 gamma:0.1
 stepvalue:50000
 stepvalue:100000
+#stepvalue:200000
+#stepvalue:250000
 #stepvalue:10000
 # Display every 200 iterations
 display: 200
 # The maximum number of iterations
 max_iter: 150000
 # snapshot intermediate results
-snapshot: 10000
+snapshot: 50000
 #snapshot_format: HDF5
 snapshot_prefix: "examples/cifar10/cifar10_full"
 # solver mode: CPU or GPU

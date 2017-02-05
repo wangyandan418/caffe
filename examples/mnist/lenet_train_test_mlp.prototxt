@@ -41,12 +41,18 @@ layer {
   top: "ip1"
   param {
     lr_mult: 1
-#    quantification_level: -0.1
-#    quantification_level: 0
-#    quantification_level: 0.1
-    quantification_level: -0.06
+    quantification_level: -0.1
     quantification_level: 0
-    quantification_level: 0.06
+    quantification_level: 0.1
+    quantification_level: 0.07
+    quantification_level: -0.07
+#    quantification_level: 0.03
+#    quantification_level: -0.03
+#    quantification_level: 0.05
+#    quantification_level: -0.05
+#    quantification_level: -0.06
+#    quantification_level: 0
+#    quantification_level: 0.06
 
   }
   param {
@@ -78,12 +84,18 @@ layer {
   top: "ip2"
   param {
     lr_mult: 1
+   quantification_level: -0.03
+   quantification_level: 0
+   quantification_level: 0.03
+   quantification_level: 0.09
+   quantification_level: -0.09
+#   quantification_level: -0.05
+#   quantification_level: 0.05
 #   quantification_level: -0.1
-#   quantification_level: 0
 #   quantification_level: 0.1
-    quantification_level: -0.06
-    quantification_level: 0
-    quantification_level: 0.06
+#   quantification_level: -0.06
+#   quantification_level: 0
+#   quantification_level: 0.06
   }
   param {
     lr_mult: 2
@@ -114,12 +126,18 @@ layer {
   param {
     lr_mult: 1
     decay_mult: 4
-#    quantification_level: -0.1
-#    quantification_level: -0
-#    quantification_level: 0.1
-    quantification_level: -0.06
-    quantification_level: 0
-    quantification_level: 0.06
+    quantification_level: -0.25
+    quantification_level: -0
+    quantification_level: 0.25
+    quantification_level: -0.31
+    quantification_level: 0.31
+#    quantification_level: 0.59
+#    quantification_level: -0.59
+#    quantification_level: 0.61
+#    quantification_level: -0.61
+#    quantification_level: -0.06
+#    quantification_level: 0
+#    quantification_level: 0.06
   }
   param {
     lr_mult: 2
