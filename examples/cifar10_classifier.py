@@ -46,10 +46,10 @@ s4 = np.random.normal(mu, sigma, num4)
 
 caffe.set_mode_cpu()
 # src_model = caffe_root + 'examples/cifar10/0.0005_0.002_0.0_0.0_0.0_Sat_Jun_11_11-26-01_EDT_2016/cifar10_full_iter_130000.caffemodel'
-# src_model = caffe_root + 'examples/cifar10/cifar10_full_iter_300000_0.8212.caffemodel'
+src_model = caffe_root + 'examples/cifar10/cifar10_full_iter_300000_0.8212.caffemodel'
 # src_model = caffe_root + 'examples/cifar10/0.6_0.0_0.0_0.0_0.0_Fri_Jul__8_14-28-31_EDT_2016//cifar10_full_iter_150000.caffemodel'
 # src_model = caffe_root + 'examples/cifar10/cifar10_full_iter_150000_0.7659.caffemodel'
-src_model = caffe_root + 'examples/cifar10/cifar10_full_bias_last_layer_iter_150000.caffemodel'
+# src_model = caffe_root + 'examples/cifar10/cifar10_full_bias_last_layer_iter_150000.caffemodel'
 # src_model = caffe_root + 'examples/cifar10/cifar10_full_bias_iter_150000.caffemodel'
 # src_model = caffe_root + 'examples/cifar10/cifar10_full_iter_150000.caffemodel'
 # src_model = caffe_root + 'examples/cifar10/cifar10_full_iter_150000.caffemodel'
@@ -60,40 +60,49 @@ net = caffe.Net(caffe_root + 'examples/cifar10/cifar10_full_cnn.prototxt',
               #caffe_root + 'examples/cifar10/cifar10_full_iter_300000.caffemodel',
               caffe.TEST)
 
-step = 0.04
+step = 0.6
+quan_pair = {"conv1": [-step, 0, step, -0.038, 0.038, -0.019, 0.019, -0.08, 0.08],
+             "conv2": [-step, 0, step, -0.038, 0.038, -0.019, 0.019, -0.08, 0.08],
+             "conv3": [-step, 0, step, -0.038, 0.038, -0.019, 0.019, -0.08, 0.08],
+             "ip1": [-step, 0, step, -0.038, 0.038, -0.019, 0.019, -0.08, 0.08]}
+
 # quan_pair = {"conv1": [-step, 0, step],
 #              "conv2": [-step, 0, step],
 #              "conv3": [-step, 0, step],
 #              "ip1": [-step, 0, step]}
 
-# quan_pair = {"conv1": [-0.12, 0, 0.12],
-#              "conv2": [-0.08, 0, 0.08],
-#              "conv3": [-0.02, 0, 0.02],
-#              "ip1": [-0.008, 0, 0.008]}
+# quan_pair = {"conv1": [-0.29,-0.12, 0, 0.12, 0.29],
+#              "conv2": [-0.05,-0.08, 0, 0.05, 0.08],
+#              "conv3": [-0.08,-0.02, 0, 0.02, 0.08],
+#              "ip1": [-0.008,-0.001, 0, 0.001, 0.008, ]}
+
+# quan_pair = {"conv1": [-0.12, 0, 0.12, -0.29, 0.29],
+#              "conv2": [-0.08, 0, 0.08, -0.05, 0.05],
+#              "conv3": [-0.02, 0, 0.02, -0.08, 0.08]}
 
 # quan_pair = {"conv1": [-0.12, 0, 0.12],
 #              "conv2": [-0.08, 0, 0.08],
 #              "conv3": [-0.02, 0, 0.02]}
 #
-# for layername in quan_pair.iterkeys():
-#     qua_list = quan_pair[layername]
-#     weights = net.params[layername][0].data
-#     w_shape = weights.shape
-#     w_f = weights.flatten()
-#     plot_hist(w_f, "{} before quantification".format(layername))
-#     for idx, val in enumerate(w_f):
-#         # quantification
-#         d = abs(val - qua_list[0])
-#         idx_qua = qua_list[0]
-#         for list_val in qua_list:
-#             if abs(val - list_val) < d:
-#                 d = abs(val - list_val)
-#                 idx_qua = list_val
-#         w_f[idx] = idx_qua
-#     # plot_hist(w_f, "{} after quantification".format(layername))
-#     weights[:] = w_f.reshape(w_shape)
-# plt.show()
-# plt.show()
+for layername in quan_pair.iterkeys():
+    qua_list = quan_pair[layername]
+    weights = net.params[layername][0].data
+    w_shape = weights.shape
+    w_f = weights.flatten()
+    # plot_hist(w_f, "{} before quantification".format(layername))
+    for idx, val in enumerate(w_f):
+        # quantification
+        d = abs(val - qua_list[0])
+        idx_qua = qua_list[0]
+        for list_val in qua_list:
+            if abs(val - list_val) < d:
+                d = abs(val - list_val)
+                idx_qua = list_val
+        w_f[idx] = idx_qua
+    # plot_hist(w_f, "{} after quantification".format(layername))
+    weights[:] = w_f.reshape(w_shape)
+plt.show()
+plt.show()
 
 # # imp=0.1
 # #step_ip3 = 0.61

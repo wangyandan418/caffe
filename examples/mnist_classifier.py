@@ -29,8 +29,8 @@ plt.rcParams['image.cmap'] = 'gray'
 caffe_root = './'
 np.random.seed(8773)
 
-# val_path  = 'examples/mnist/mnist_test_mlp_lmdb/'
-val_path  = 'examples/mnist/mnist_test_cnn_lmdb/'
+val_path  = 'examples/mnist/mnist_test_mlp_lmdb/'
+# val_path  = 'examples/mnist/mnist_test_cnn_lmdb/'
 
 #mu, sigma = 0, 0.03  # mean and standard deviation
 #num1 = 500
@@ -45,9 +45,9 @@ val_path  = 'examples/mnist/mnist_test_cnn_lmdb/'
 #s4 = np.random.normal(mu, sigma, num4)
 
 # GPU mode
-caffe.set_device(0)
-caffe.set_mode_gpu()
-#caffe.set_mode_cpu()
+# caffe.set_device(0)
+# caffe.set_mode_gpu()
+caffe.set_mode_cpu()
 
 # layer_names = ["conv1","conv2","ip1","ip2"]
 layer_names = ["ip1","ip2","ip3"]
@@ -56,10 +56,11 @@ mu, sigma = 0, 0.035  # mean and standard deviation
 # src_model = caffe_root + 'examples/mnist/lenet_iter_60000.caffemodel'
 # src_model = caffe_root + 'examples/mnist/mlp_500_300.caffemodel'
 # src_model = caffe_root + 'examples/mnist/mlp_500_300_quan.caffemodel'
+src_model = caffe_root + 'examples/mnist/lenet_iter_60000_0.991.caffemodel'
 # src_model = caffe_root + 'examples/mnist/lenet_bias_iter_60000.caffemodel'
 # src_model = caffe_root + 'examples/mnist/lenet_iter_60000_cnn.caffemodel'
 # src_model = caffe_root + 'examples/mnist/lenet_mlp_iter_60000_0.9723.caffemodel'
-src_model = caffe_root + 'examples/mnist/0.0001_0.0_0.0_0.0_0.0_Fri_Jul_15_09-52-31_EDT_2016/lenet_cnn_bias_iter_60000.caffemodel'
+# src_model = caffe_root + 'examples/mnist/0.0001_0.0_0.0_0.0_0.0_Fri_Jul_15_09-52-31_EDT_2016/lenet_cnn_bias_iter_60000.caffemodel'
 # src_model = caffe_root + 'examples/mnist/lenet_bias_iter_60000_0.98_diff_constrain_bias_lr0.01_decay_0.0015_0.001_0.004.caffemodel'
 # src_model = caffe_root + 'examples/mnist/0.008_0.0001_0.0_0.0_0.0_Fri_Jul__1_14-41-26_EDT_2016/lenet_cnn_bias_iter_30000.caffemodel'
 # src_model = caffe_root + 'examples/mnist/lenet_cnn_iter_16457.caffemodel'
@@ -84,6 +85,7 @@ net = caffe.Net(
 #    plot_hist(w_f, "{}".format(layer_name))
 #plt.show()
 
+
 # quan_pair={"ip1":[-0.07,0,0.07],
 #            "ip2":[-0.09,0,0.09],
 #            "ip3":[-0.25,0,0.25]}
@@ -96,10 +98,11 @@ net = caffe.Net(
 #             "conv2": [-0.07, 0, 0.07],
 #             "ip1": [-0.02, 0, 0.02],
 #             "ip2": [-0.18, 0, 0.18]}
-step=0.06
-quan_pair = {"ip1": [-step, 0, step ],
-             "ip2": [-step, 0, step ],
-             "ip3": [-step, 0, step]}
+
+step=0.29
+quan_pair = {"ip1": [-step, 0, step, -0.08, 0.08, -0.05, 0.05, -0.12, 0.12],
+             "ip2": [-step, 0, step, -0.08, 0.08, -0.05, 0.05, -0.12, 0.12 ],
+             "ip3": [-step, 0, step, -0.08, 0.08, -0.05, 0.05, -0.12, 0.12]}
 
 # quan_pair = {"conv1": [-0.07, 0, 0.07],
 #              "conv2": [-0.07, 0, 0.07],
@@ -115,7 +118,7 @@ for layername in quan_pair.iterkeys():
     weights = net.params[layername][0].data
     w_shape = weights.shape
     w_f = weights.flatten()
-    plot_hist(w_f, "{} before quantification".format(layername))
+    # plot_hist(w_f, "{} before quantification".format(layername))
     for idx, val in enumerate(w_f):
         # quantification
         d = abs(val - qua_list[0])
@@ -449,7 +452,7 @@ for key, value in lmdb_cursor:
         sys.stdout.flush()
     image_count += 1
 
-# print(step)
+print(step)
 # print(step_ip1)
 # plt.show()
 #file_split = os.path.splitext(src_model)
